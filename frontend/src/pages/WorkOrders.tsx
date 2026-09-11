@@ -85,16 +85,16 @@ export const WorkOrders: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Work Orders & Stock Check</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Work Orders & Stock Check</h1>
+          <p className="text-xs text-slate-500">
             Automated location-based material shortage detection
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2.5">
           {user?.role === 'ADMIN' && (
             <button
               onClick={() => {
@@ -102,9 +102,9 @@ export const WorkOrders: React.FC = () => {
                 if (items.length > 0 && !itemId) setItemId(items[0].id);
                 setIsModalOpen(true);
               }}
-              className="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors"
+              className="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-colors"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3.5 w-3.5" />
               <span>Create Work Order</span>
             </button>
           )}
@@ -112,91 +112,91 @@ export const WorkOrders: React.FC = () => {
           <button
             onClick={fetchWorkOrders}
             disabled={loading}
-            className="flex items-center space-x-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors"
+            className="flex items-center space-x-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-colors"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm flex items-center space-x-2">
+        <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-xs flex items-center space-x-2">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      {/* Table */}
+      {/* Table Container with clean sizing */}
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
-            <thead className="bg-slate-50 text-slate-600 font-semibold">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
               <tr>
-                <th className="px-5 py-3.5 whitespace-nowrap">Work Order #</th>
-                <th className="px-5 py-3.5 whitespace-nowrap">Location</th>
-                <th className="px-5 py-3.5 whitespace-nowrap">Item Required</th>
-                <th className="px-5 py-3.5 text-right whitespace-nowrap">Required Qty</th>
-                <th className="px-5 py-3.5 text-right whitespace-nowrap">Available at Loc</th>
-                <th className="px-5 py-3.5 text-right whitespace-nowrap">Shortage</th>
-                <th className="px-5 py-3.5 whitespace-nowrap">Assigned Operator</th>
-                <th className="px-5 py-3.5 whitespace-nowrap">Status</th>
-                <th className="px-5 py-3.5 text-right whitespace-nowrap">Actions</th>
+                <th className="py-3 px-3.5 whitespace-nowrap">Work Order #</th>
+                <th className="py-3 px-3 whitespace-nowrap">Location</th>
+                <th className="py-3 px-3.5 whitespace-nowrap">Item Required</th>
+                <th className="py-3 px-3 text-right whitespace-nowrap">Required</th>
+                <th className="py-3 px-3 text-right whitespace-nowrap">Available</th>
+                <th className="py-3 px-3 text-center whitespace-nowrap">Shortage</th>
+                <th className="py-3 px-3.5 whitespace-nowrap">Assigned Operator</th>
+                <th className="py-3 px-3 whitespace-nowrap">Status</th>
+                <th className="py-3 px-3.5 text-right whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="px-5 py-8 text-center text-slate-400">
+                  <td colSpan={9} className="py-8 text-center text-slate-400">
                     Loading work orders...
                   </td>
                 </tr>
               ) : workOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-5 py-8 text-center text-slate-400">
+                  <td colSpan={9} className="py-8 text-center text-slate-400">
                     No work orders found.
                   </td>
                 </tr>
               ) : (
                 workOrders.map((wo) => (
                   <tr key={wo.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="px-5 py-4 font-mono text-xs font-semibold text-slate-800 whitespace-nowrap">
+                    <td className="py-3 px-3.5 font-mono font-semibold text-slate-800 whitespace-nowrap">
                       {wo.workOrderNumber}
                     </td>
-                    <td className="px-5 py-4 whitespace-nowrap">
-                      <span className="inline-block px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-xs rounded-md">
+                    <td className="py-3 px-3 whitespace-nowrap">
+                      <span className="inline-block px-2 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-[11px] rounded">
                         {wo.locationCode}
                       </span>
                     </td>
-                    <td className="px-5 py-4 whitespace-nowrap">
-                      <div className="font-medium text-slate-900">{wo.itemName}</div>
-                      <div className="text-xs text-slate-400 font-mono">{wo.itemSku}</div>
+                    <td className="py-3 px-3.5 whitespace-nowrap">
+                      <div className="font-semibold text-slate-900">{wo.itemName}</div>
+                      <div className="text-[11px] text-slate-400 font-mono">{wo.itemSku}</div>
                     </td>
-                    <td className="px-5 py-4 text-right font-bold text-slate-900 whitespace-nowrap">
-                      {wo.requiredQuantity} <span className="text-xs font-normal text-slate-500">{wo.unit}</span>
+                    <td className="py-3 px-3 text-right font-bold text-slate-900 whitespace-nowrap">
+                      {wo.requiredQuantity} <span className="text-[10px] font-normal text-slate-500">{wo.unit}</span>
                     </td>
-                    <td className="px-5 py-4 text-right font-medium text-slate-600 whitespace-nowrap">
-                      {wo.availableAtLocation} <span className="text-xs text-slate-400">{wo.unit}</span>
+                    <td className="py-3 px-3 text-right font-medium text-slate-600 whitespace-nowrap">
+                      {wo.availableAtLocation} <span className="text-[10px] text-slate-400">{wo.unit}</span>
                     </td>
-                    <td className="px-5 py-4 text-right whitespace-nowrap">
+                    <td className="py-3 px-3 text-center whitespace-nowrap">
                       {wo.shortageQuantity > 0 ? (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-rose-100 border border-rose-200 text-rose-700">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 border border-rose-200 text-rose-700">
                           {wo.shortageQuantity} {wo.unit} Short
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-50 border border-emerald-200 text-emerald-700">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 border border-emerald-200 text-emerald-700">
                           No Shortage
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-4 text-slate-600 text-xs whitespace-nowrap">{wo.assignedUserName}</td>
-                    <td className="px-5 py-4 whitespace-nowrap">{getStatusBadge(wo.status)}</td>
-                    <td className="px-5 py-4 text-right whitespace-nowrap">
-                      <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5 text-xs shadow-sm">
+                    <td className="py-3 px-3.5 text-slate-600 whitespace-nowrap">{wo.assignedUserName}</td>
+                    <td className="py-3 px-3 whitespace-nowrap">{getStatusBadge(wo.status)}</td>
+                    <td className="py-3 px-3.5 text-right whitespace-nowrap">
+                      <div className="inline-flex rounded border border-slate-200 bg-white p-0.5 shadow-sm">
                         {wo.status === 'ASSIGNED' && (
                           <button
                             onClick={() => handleStatusChange(wo.id, 'IN_PROGRESS')}
-                            className="px-2.5 py-1 text-indigo-600 hover:bg-indigo-50 rounded font-medium transition-colors"
+                            className="px-2 py-0.5 text-indigo-600 hover:bg-indigo-50 rounded font-semibold text-[11px] transition-colors"
                           >
                             Start
                           </button>
@@ -204,13 +204,13 @@ export const WorkOrders: React.FC = () => {
                         {wo.status === 'IN_PROGRESS' && (
                           <button
                             onClick={() => handleStatusChange(wo.id, 'COMPLETED')}
-                            className="px-2.5 py-1 text-emerald-600 hover:bg-emerald-50 rounded font-medium transition-colors"
+                            className="px-2 py-0.5 text-emerald-600 hover:bg-emerald-50 rounded font-semibold text-[11px] transition-colors"
                           >
                             Complete
                           </button>
                         )}
                         {wo.status === 'COMPLETED' && (
-                          <span className="px-2.5 py-1 text-slate-400 font-medium">Done</span>
+                          <span className="px-2 py-0.5 text-slate-400 font-medium text-[11px]">Done</span>
                         )}
                       </div>
                     </td>
@@ -225,17 +225,17 @@ export const WorkOrders: React.FC = () => {
       {/* Modal: Create Work Order */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Create New Work Order">
         {formError && (
-          <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-sm">
+          <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-xs">
             {formError}
           </div>
         )}
-        <form onSubmit={handleCreateWorkOrder} className="space-y-4">
+        <form onSubmit={handleCreateWorkOrder} className="space-y-3.5">
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">Target Location</label>
             <select
               value={locationId}
               onChange={(e) => setLocationId(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-indigo-500"
               required
             >
               {locations.map((loc) => (
@@ -251,7 +251,7 @@ export const WorkOrders: React.FC = () => {
             <select
               value={itemId}
               onChange={(e) => setItemId(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-indigo-500"
               required
             >
               {items.map((item) => (
@@ -269,23 +269,23 @@ export const WorkOrders: React.FC = () => {
               min="1"
               value={requiredQuantity}
               onChange={(e) => setRequiredQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-indigo-500"
               required
             />
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end space-x-2 pt-3 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 hover:bg-slate-50"
+              className="px-3.5 py-1.5 border border-slate-300 rounded-lg text-xs text-slate-700 hover:bg-slate-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium shadow-sm disabled:opacity-50"
+              className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm disabled:opacity-50"
             >
               {submitting ? 'Creating...' : 'Create & Check Stock'}
             </button>
