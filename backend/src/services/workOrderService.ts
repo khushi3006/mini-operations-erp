@@ -1,4 +1,4 @@
-import { WorkOrderStatus, Role } from '@prisma/client';
+import { WorkOrderStatus } from '@prisma/client';
 import prisma from '../config/db';
 import { AppError } from '../middleware/errorHandler';
 
@@ -40,19 +40,16 @@ export const createWorkOrder = async (input: CreateWorkOrderInput) => {
     throw new AppError('Required quantity must be a positive integer', 400);
   }
 
-  // Validate location exists
   const location = await prisma.location.findUnique({ where: { id: locationId } });
   if (!location) throw new AppError('Location not found', 404);
 
-  // Validate item exists
   const item = await prisma.item.findUnique({ where: { id: itemId } });
   if (!item) throw new AppError('Item not found', 404);
 
-  // Validate assigned user exists
   const user = await prisma.user.findUnique({ where: { id: assignedUserId } });
   if (!user) throw new AppError('Assigned user not found', 404);
 
-  const workOrderNumber = input.workOrderNumber || `WO-${Date.now().toString().slice(-6)}`;
+  const workOrderNumber = input.workOrderNumber || `WO-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
   const workOrder = await prisma.workOrder.create({
     data: {

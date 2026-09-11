@@ -84,7 +84,7 @@ export const createTransfer = async (input: CreateTransferInput) => {
     );
   }
 
-  const transferNumber = input.transferNumber || `TRF-${Date.now().toString().slice(-6)}`;
+  const transferNumber = input.transferNumber || `TRF-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
   return prisma.stockTransfer.create({
     data: {

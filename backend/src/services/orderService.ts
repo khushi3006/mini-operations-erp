@@ -55,7 +55,7 @@ export const createOrderAndReserveStock = async (input: CreateOrderInput) => {
     throw new AppError('Order quantity must be a positive integer', 400);
   }
 
-  const orderNumber = input.orderNumber || `ORD-${Date.now().toString().slice(-6)}`;
+  const orderNumber = input.orderNumber || `ORD-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 
   // Concurrency-safe atomic transaction with row locking
   return prisma.$transaction(async (tx) => {
