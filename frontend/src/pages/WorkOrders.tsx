@@ -88,9 +88,9 @@ export const WorkOrders: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Work Orders & Stock Check</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Work Orders & Stock Check</h1>
           <p className="text-sm text-slate-500">
-            Create production work orders with automated location material shortage detection.
+            Automated location-based material shortage detection
           </p>
         </div>
 
@@ -133,68 +133,70 @@ export const WorkOrders: React.FC = () => {
           <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
             <thead className="bg-slate-50 text-slate-600 font-semibold">
               <tr>
-                <th className="px-6 py-3.5">Work Order #</th>
-                <th className="px-6 py-3.5">Location</th>
-                <th className="px-6 py-3.5">Item Required</th>
-                <th className="px-6 py-3.5 text-right">Required Qty</th>
-                <th className="px-6 py-3.5 text-right">Available at Loc</th>
-                <th className="px-6 py-3.5 text-right">Shortage</th>
-                <th className="px-6 py-3.5">Assigned Operator</th>
-                <th className="px-6 py-3.5">Status</th>
-                <th className="px-6 py-3.5 text-right">Actions</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Work Order #</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Location</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Item Required</th>
+                <th className="px-5 py-3.5 text-right whitespace-nowrap">Required Qty</th>
+                <th className="px-5 py-3.5 text-right whitespace-nowrap">Available at Loc</th>
+                <th className="px-5 py-3.5 text-right whitespace-nowrap">Shortage</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Assigned Operator</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Status</th>
+                <th className="px-5 py-3.5 text-right whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-slate-400">
+                  <td colSpan={9} className="px-5 py-8 text-center text-slate-400">
                     Loading work orders...
                   </td>
                 </tr>
               ) : workOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-slate-400">
+                  <td colSpan={9} className="px-5 py-8 text-center text-slate-400">
                     No work orders found.
                   </td>
                 </tr>
               ) : (
                 workOrders.map((wo) => (
                   <tr key={wo.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="px-6 py-4 font-mono font-medium text-slate-900">
+                    <td className="px-5 py-4 font-mono text-xs font-semibold text-slate-800 whitespace-nowrap">
                       {wo.workOrderNumber}
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="font-semibold">{wo.locationCode}</span>
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <span className="inline-block px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-xs rounded-md">
+                        {wo.locationCode}
+                      </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-4 whitespace-nowrap">
                       <div className="font-medium text-slate-900">{wo.itemName}</div>
                       <div className="text-xs text-slate-400 font-mono">{wo.itemSku}</div>
                     </td>
-                    <td className="px-6 py-4 text-right font-medium">
-                      {wo.requiredQuantity} {wo.unit}
+                    <td className="px-5 py-4 text-right font-bold text-slate-900 whitespace-nowrap">
+                      {wo.requiredQuantity} <span className="text-xs font-normal text-slate-500">{wo.unit}</span>
                     </td>
-                    <td className="px-6 py-4 text-right font-medium text-slate-600">
-                      {wo.availableAtLocation} {wo.unit}
+                    <td className="px-5 py-4 text-right font-medium text-slate-600 whitespace-nowrap">
+                      {wo.availableAtLocation} <span className="text-xs text-slate-400">{wo.unit}</span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-5 py-4 text-right whitespace-nowrap">
                       {wo.shortageQuantity > 0 ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-rose-100 text-rose-700">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-rose-100 border border-rose-200 text-rose-700">
                           {wo.shortageQuantity} {wo.unit} Short
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-50 border border-emerald-200 text-emerald-700">
                           No Shortage
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-slate-600">{wo.assignedUserName}</td>
-                    <td className="px-6 py-4">{getStatusBadge(wo.status)}</td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-5 py-4 text-slate-600 text-xs whitespace-nowrap">{wo.assignedUserName}</td>
+                    <td className="px-5 py-4 whitespace-nowrap">{getStatusBadge(wo.status)}</td>
+                    <td className="px-5 py-4 text-right whitespace-nowrap">
                       <div className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5 text-xs shadow-sm">
                         {wo.status === 'ASSIGNED' && (
                           <button
                             onClick={() => handleStatusChange(wo.id, 'IN_PROGRESS')}
-                            className="px-2 py-1 text-indigo-600 hover:bg-indigo-50 rounded font-medium"
+                            className="px-2.5 py-1 text-indigo-600 hover:bg-indigo-50 rounded font-medium transition-colors"
                           >
                             Start
                           </button>
@@ -202,13 +204,13 @@ export const WorkOrders: React.FC = () => {
                         {wo.status === 'IN_PROGRESS' && (
                           <button
                             onClick={() => handleStatusChange(wo.id, 'COMPLETED')}
-                            className="px-2 py-1 text-emerald-600 hover:bg-emerald-50 rounded font-medium"
+                            className="px-2.5 py-1 text-emerald-600 hover:bg-emerald-50 rounded font-medium transition-colors"
                           >
                             Complete
                           </button>
                         )}
                         {wo.status === 'COMPLETED' && (
-                          <span className="px-2 py-1 text-slate-400">Done</span>
+                          <span className="px-2.5 py-1 text-slate-400 font-medium">Done</span>
                         )}
                       </div>
                     </td>

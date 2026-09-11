@@ -89,9 +89,9 @@ export const CustomerOrders: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Customer Orders & Stock Reservation</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Customer Orders & Stock Reservation</h1>
           <p className="text-sm text-slate-500">
-            Create customer orders with instant atomic stock reservation and concurrency safety.
+            Real-time stock reservation with concurrency safety
           </p>
         </div>
 
@@ -135,57 +135,59 @@ export const CustomerOrders: React.FC = () => {
           <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
             <thead className="bg-slate-50 text-slate-600 font-semibold">
               <tr>
-                <th className="px-6 py-3.5">Order #</th>
-                <th className="px-6 py-3.5">Customer Name</th>
-                <th className="px-6 py-3.5">Location</th>
-                <th className="px-6 py-3.5">Item Reserved</th>
-                <th className="px-6 py-3.5">Batch</th>
-                <th className="px-6 py-3.5 text-right">Quantity</th>
-                <th className="px-6 py-3.5">Status</th>
-                <th className="px-6 py-3.5">Sales Rep</th>
-                <th className="px-6 py-3.5">Date</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Order #</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Customer Name</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Location</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Item Reserved</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Batch</th>
+                <th className="px-5 py-3.5 text-right whitespace-nowrap">Quantity</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Status</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Sales Rep</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-slate-400">
+                  <td colSpan={9} className="px-5 py-8 text-center text-slate-400">
                     Loading customer orders...
                   </td>
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-slate-400">
+                  <td colSpan={9} className="px-5 py-8 text-center text-slate-400">
                     No customer orders found.
                   </td>
                 </tr>
               ) : (
                 orders.map((ord) => (
                   <tr key={ord.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="px-6 py-4 font-mono font-medium text-slate-900">
+                    <td className="px-5 py-4 font-mono text-xs font-semibold text-slate-800 whitespace-nowrap">
                       {ord.orderNumber}
                     </td>
-                    <td className="px-6 py-4 font-medium text-slate-800">
+                    <td className="px-5 py-4 font-medium text-slate-800 whitespace-nowrap">
                       {ord.customerName}
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="font-semibold">{ord.location.code}</span>
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <span className="inline-block px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-xs rounded-md">
+                        {ord.location.code}
+                      </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div>{ord.item.name}</div>
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <div className="font-medium text-slate-900">{ord.item.name}</div>
                       <div className="text-xs text-slate-400 font-mono">{ord.item.sku}</div>
                     </td>
-                    <td className="px-6 py-4 font-mono text-xs text-slate-600">
+                    <td className="px-5 py-4 font-mono text-xs text-slate-600 whitespace-nowrap">
                       {ord.batchNumber}
                     </td>
-                    <td className="px-6 py-4 text-right font-bold text-slate-900">
-                      {ord.quantity} {ord.item.unit}
+                    <td className="px-5 py-4 text-right font-bold text-slate-900 whitespace-nowrap">
+                      {ord.quantity} <span className="text-xs font-normal text-slate-500">{ord.item.unit}</span>
                     </td>
-                    <td className="px-6 py-4">{getStatusBadge(ord.status)}</td>
-                    <td className="px-6 py-4 text-slate-600 text-xs">
+                    <td className="px-5 py-4 whitespace-nowrap">{getStatusBadge(ord.status)}</td>
+                    <td className="px-5 py-4 text-slate-600 text-xs whitespace-nowrap">
                       {ord.createdBy.name}
                     </td>
-                    <td className="px-6 py-4 text-slate-500 text-xs">
+                    <td className="px-5 py-4 text-slate-500 text-xs whitespace-nowrap">
                       {new Date(ord.createdAt).toLocaleDateString()}
                     </td>
                   </tr>

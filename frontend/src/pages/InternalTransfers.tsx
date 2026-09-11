@@ -95,15 +95,14 @@ export const InternalTransfers: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'RECEIVED':
-        return <Badge variant="success">Received (Complete)</Badge>;
+        return <Badge variant="success">Received</Badge>;
       case 'DISPATCHED':
-        return <Badge variant="warning">Dispatched (In-Transit)</Badge>;
+        return <Badge variant="warning">In-Transit</Badge>;
       default:
         return <Badge variant="info">Requested</Badge>;
     }
   };
 
-  // Filter available batches based on source location
   const sourceBatches = sourceLocationId
     ? inventoryList.filter((inv) => inv.locationId === sourceLocationId && inv.availableQuantity > 0)
     : [];
@@ -112,9 +111,9 @@ export const InternalTransfers: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Internal Stock Transfers</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Internal Stock Transfers</h1>
           <p className="text-sm text-slate-500">
-            Multi-step inter-warehouse stock transit flow: Requested $\rightarrow$ Dispatched $\rightarrow$ Received.
+            Multi-location transit flow: Requested $\rightarrow$ Dispatched $\rightarrow$ Received
           </p>
         </div>
 
@@ -161,61 +160,61 @@ export const InternalTransfers: React.FC = () => {
           <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
             <thead className="bg-slate-50 text-slate-600 font-semibold">
               <tr>
-                <th className="px-6 py-3.5">Transfer #</th>
-                <th className="px-6 py-3.5">Transit Route</th>
-                <th className="px-6 py-3.5">Item & Batch</th>
-                <th className="px-6 py-3.5 text-right">Quantity</th>
-                <th className="px-6 py-3.5">Status</th>
-                <th className="px-6 py-3.5">Initiated By</th>
-                <th className="px-6 py-3.5 text-right">Actions</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Transfer #</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Route</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Item & Batch</th>
+                <th className="px-5 py-3.5 text-right whitespace-nowrap">Quantity</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Status</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Initiated By</th>
+                <th className="px-5 py-3.5 text-right whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
+                  <td colSpan={7} className="px-5 py-8 text-center text-slate-400">
                     Loading transfers...
                   </td>
                 </tr>
               ) : transfers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
+                  <td colSpan={7} className="px-5 py-8 text-center text-slate-400">
                     No stock transfers recorded.
                   </td>
                 </tr>
               ) : (
                 transfers.map((tr) => (
                   <tr key={tr.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="px-6 py-4 font-mono font-medium text-slate-900">
+                    <td className="px-5 py-4 font-mono text-xs font-semibold text-slate-800 whitespace-nowrap">
                       {tr.transferNumber}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-2 font-medium">
-                        <span className="text-slate-800">{tr.sourceLocation.code}</span>
-                        <ArrowRight className="h-3.5 w-3.5 text-slate-400" />
-                        <span className="text-slate-800">{tr.destinationLocation.code}</span>
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <div className="inline-flex items-center space-x-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1">
+                        <span className="font-bold text-xs text-indigo-700 whitespace-nowrap">{tr.sourceLocation.code}</span>
+                        <ArrowRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                        <span className="font-bold text-xs text-emerald-700 whitespace-nowrap">{tr.destinationLocation.code}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-4 whitespace-nowrap">
                       <div className="font-medium text-slate-900">{tr.item.name}</div>
                       <div className="text-xs text-slate-400 font-mono">
                         {tr.item.sku} • {tr.batchNumber}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right font-medium">
-                      {tr.quantity} {tr.item.unit}
+                    <td className="px-5 py-4 text-right font-bold text-slate-900 whitespace-nowrap">
+                      {tr.quantity} <span className="text-xs font-normal text-slate-500">{tr.item.unit}</span>
                     </td>
-                    <td className="px-6 py-4">{getStatusBadge(tr.status)}</td>
-                    <td className="px-6 py-4 text-slate-600 text-xs">
+                    <td className="px-5 py-4 whitespace-nowrap">{getStatusBadge(tr.status)}</td>
+                    <td className="px-5 py-4 text-slate-600 text-xs whitespace-nowrap">
                       {tr.requestedBy.name}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-5 py-4 text-right whitespace-nowrap">
                       {(user?.role === 'ADMIN' || user?.role === 'OPERATIONS') && (
-                        <div className="inline-flex space-x-2">
+                        <div className="inline-flex items-center space-x-2">
                           {tr.status === 'REQUESTED' && (
                             <button
                               onClick={() => handleDispatch(tr.id)}
-                              className="flex items-center space-x-1 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-medium shadow-sm transition-colors"
+                              className="inline-flex items-center space-x-1 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors whitespace-nowrap"
                             >
                               <Truck className="h-3.5 w-3.5" />
                               <span>Dispatch</span>
@@ -224,14 +223,16 @@ export const InternalTransfers: React.FC = () => {
                           {tr.status === 'DISPATCHED' && (
                             <button
                               onClick={() => handleReceive(tr.id)}
-                              className="flex items-center space-x-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium shadow-sm transition-colors"
+                              className="inline-flex items-center space-x-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors whitespace-nowrap"
                             >
                               <CheckCircle2 className="h-3.5 w-3.5" />
                               <span>Receive Stock</span>
                             </button>
                           )}
                           {tr.status === 'RECEIVED' && (
-                            <span className="text-xs text-emerald-600 font-medium">Completed</span>
+                            <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md">
+                              Completed
+                            </span>
                           )}
                         </div>
                       )}

@@ -39,7 +39,7 @@ export const Inventory: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Multi-Location Inventory</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Multi-Location Inventory</h1>
           <p className="text-sm text-slate-500">
             Real-time batch inventory tracking across all warehouse facilities.
           </p>
@@ -51,7 +51,7 @@ export const Inventory: React.FC = () => {
             <select
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
-              className="text-sm bg-transparent border-none focus:outline-none text-slate-700"
+              className="text-sm bg-transparent border-none focus:outline-none text-slate-700 font-medium"
             >
               <option value="">All Locations</option>
               {locations.map((loc) => (
@@ -108,52 +108,54 @@ export const Inventory: React.FC = () => {
           <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
             <thead className="bg-slate-50 text-slate-600 font-semibold">
               <tr>
-                <th className="px-6 py-3.5">Item / SKU</th>
-                <th className="px-6 py-3.5">Category</th>
-                <th className="px-6 py-3.5">Location</th>
-                <th className="px-6 py-3.5">Batch Number</th>
-                <th className="px-6 py-3.5 text-right">Physical Qty</th>
-                <th className="px-6 py-3.5 text-right">Reserved Qty</th>
-                <th className="px-6 py-3.5 text-right">Available Qty</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Item / SKU</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Category</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Location</th>
+                <th className="px-5 py-3.5 whitespace-nowrap">Batch Number</th>
+                <th className="px-5 py-3.5 text-right whitespace-nowrap">Physical Qty</th>
+                <th className="px-5 py-3.5 text-right whitespace-nowrap">Reserved Qty</th>
+                <th className="px-5 py-3.5 text-right whitespace-nowrap">Available Qty</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
+                  <td colSpan={7} className="px-5 py-8 text-center text-slate-400">
                     Loading inventory records...
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
+                  <td colSpan={7} className="px-5 py-8 text-center text-slate-400">
                     No inventory records found.
                   </td>
                 </tr>
               ) : (
                 items.map((inv) => (
                   <tr key={inv.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="px-6 py-4 font-medium text-slate-900">
+                    <td className="px-5 py-4 font-medium text-slate-900 whitespace-nowrap">
                       <div>{inv.itemName}</div>
                       <div className="text-xs text-slate-400 font-mono mt-0.5">{inv.itemSku}</div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-4 whitespace-nowrap">
                       <Badge variant="neutral">{inv.category}</Badge>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="font-semibold text-slate-800">{inv.locationCode}</span>
-                      <span className="text-xs text-slate-500 ml-1">({inv.locationName})</span>
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <span className="inline-block px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-xs rounded-md mr-1.5">
+                        {inv.locationCode}
+                      </span>
+                      <span className="text-xs text-slate-500">({inv.locationName})</span>
                     </td>
-                    <td className="px-6 py-4 font-mono text-xs text-slate-600">
+                    <td className="px-5 py-4 font-mono text-xs text-slate-600 whitespace-nowrap">
                       {inv.batchNumber}
                     </td>
-                    <td className="px-6 py-4 text-right font-medium text-slate-800">
-                      {inv.physicalQuantity} <span className="text-xs text-slate-400">{inv.unit}</span>
+                    <td className="px-5 py-4 text-right font-semibold text-slate-800 whitespace-nowrap">
+                      {inv.physicalQuantity} <span className="text-xs font-normal text-slate-400">{inv.unit}</span>
                     </td>
-                    <td className="px-6 py-4 text-right font-medium text-amber-600">
-                      {inv.reservedQuantity} <span className="text-xs text-slate-400">{inv.unit}</span>
+                    <td className="px-5 py-4 text-right font-semibold text-amber-600 whitespace-nowrap">
+                      {inv.reservedQuantity} <span className="text-xs font-normal text-slate-400">{inv.unit}</span>
                     </td>
-                    <td className="px-6 py-4 text-right font-bold text-emerald-600">
+                    <td className="px-5 py-4 text-right font-bold text-emerald-600 whitespace-nowrap">
                       {inv.availableQuantity} <span className="text-xs font-normal text-slate-400">{inv.unit}</span>
                     </td>
                   </tr>
