@@ -15,7 +15,8 @@ async function main() {
   await prisma.location.deleteMany();
   await prisma.user.deleteMany();
 
-  // 1. Create Users
+  // 1. Create Demo / Test Users for Evaluation & Automated Testing
+  // NOTE: These are non-sensitive demo fixtures specifically intended for local evaluation.
   const passwordHashAdmin = await bcrypt.hash('admin123', 10);
   const passwordHashOps = await bcrypt.hash('ops123', 10);
   const passwordHashSales = await bcrypt.hash('sales123', 10);

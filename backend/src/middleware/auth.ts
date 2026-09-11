@@ -4,7 +4,13 @@ import { Role } from '@prisma/client';
 import { AuthRequest, TokenPayload } from '../types';
 import { AppError } from './errorHandler';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'mini-operations-erp-jwt-secret-key-2026';
+const getJwtSecret = (): string => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('FATAL: JWT_SECRET environment variable is missing. Please configure it in .env');
+  }
+  return secret;
+};
 
 export const authenticate = (
   req: AuthRequest,
@@ -18,7 +24,7 @@ export const authenticate = (
 
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    const decoded = jwt.verify(token, getJwtSecret()) as TokenPayload;
     req.user = decoded;
     next();
   } catch (error) {

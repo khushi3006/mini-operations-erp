@@ -4,7 +4,14 @@ import prisma from '../config/db';
 import { AppError } from '../middleware/errorHandler';
 import { TokenPayload } from '../types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'mini-operations-erp-jwt-secret-key-2026';
+const getJwtSecret = (): string => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('FATAL: JWT_SECRET environment variable is missing. Please configure it in .env');
+  }
+  return secret;
+};
+
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 export const loginUser = async (email: string, password: string) => {
@@ -32,7 +39,7 @@ export const loginUser = async (email: string, password: string) => {
     name: user.name
   };
 
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+  const token = jwt.sign(payload, getJwtSecret(), { expiresIn: '24h' });
 
   return {
     token,
