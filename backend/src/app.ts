@@ -1,5 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './docs/swagger.json';
+
 import authRoutes from './routes/authRoutes';
 import inventoryRoutes from './routes/inventoryRoutes';
 import workOrderRoutes from './routes/workOrderRoutes';
@@ -11,6 +14,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Swagger Documentation UI mounted at /api/docs
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Base health check
 app.get('/api/health', (_req, res) => {

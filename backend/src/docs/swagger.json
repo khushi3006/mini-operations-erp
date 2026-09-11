@@ -1,0 +1,238 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Mini Operations ERP API",
+    "version": "1.0.0",
+    "description": "Production-oriented REST API for Mini Operations ERP supporting Inventory Management, Work Orders with Shortage Calculation, Multi-Step Internal Transfers, and Concurrency-Safe Customer Stock Reservations."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "example": "admin@erp.com" },
+          "password": { "type": "string", "example": "admin123" }
+        }
+      },
+      "CreateWorkOrderRequest": {
+        "type": "object",
+        "required": ["locationId", "itemId", "requiredQuantity", "assignedUserId"],
+        "properties": {
+          "workOrderNumber": { "type": "string", "example": "WO-2026-002" },
+          "locationId": { "type": "string", "example": "uuid-location" },
+          "itemId": { "type": "string", "example": "uuid-item" },
+          "requiredQuantity": { "type": "integer", "example": 100 },
+          "assignedUserId": { "type": "string", "example": "uuid-user" }
+        }
+      },
+      "CreateTransferRequest": {
+        "type": "object",
+        "required": ["sourceLocationId", "destinationLocationId", "itemId", "batchNumber", "quantity"],
+        "properties": {
+          "transferNumber": { "type": "string", "example": "TRF-2026-002" },
+          "sourceLocationId": { "type": "string", "example": "uuid-source-loc" },
+          "destinationLocationId": { "type": "string", "example": "uuid-dest-loc" },
+          "itemId": { "type": "string", "example": "uuid-item" },
+          "batchNumber": { "type": "string", "example": "BATCH-2026-S1" },
+          "quantity": { "type": "integer", "example": 30 }
+        }
+      },
+      "CreateOrderRequest": {
+        "type": "object",
+        "required": ["customerName", "locationId", "itemId", "batchNumber", "quantity"],
+        "properties": {
+          "orderNumber": { "type": "string", "example": "ORD-2026-002" },
+          "customerName": { "type": "string", "example": "Global Logistics Corp" },
+          "locationId": { "type": "string", "example": "uuid-location" },
+          "itemId": { "type": "string", "example": "uuid-item" },
+          "batchNumber": { "type": "string", "example": "BATCH-2026-S1" },
+          "quantity": { "type": "integer", "example": 25 }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "User login",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Login successful, returns JWT token and user info" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get authenticated user profile",
+        "responses": {
+          "200": { "description": "Authenticated user profile" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/inventory": {
+      "get": {
+        "tags": ["Inventory"],
+        "summary": "List multi-location inventory with computed Available quantities",
+        "parameters": [
+          { "name": "locationId", "in": "query", "schema": { "type": "string" } },
+          { "name": "itemId", "in": "query", "schema": { "type": "string" } },
+          { "name": "category", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "List of inventory records" }
+        }
+      }
+    },
+    "/api/inventory/locations": {
+      "get": {
+        "tags": ["Inventory"],
+        "summary": "List all locations/warehouses",
+        "responses": {
+          "200": { "description": "List of locations" }
+        }
+      }
+    },
+    "/api/inventory/items": {
+      "get": {
+        "tags": ["Inventory"],
+        "summary": "List all items/SKUs",
+        "responses": {
+          "200": { "description": "List of items" }
+        }
+      }
+    },
+    "/api/work-orders": {
+      "get": {
+        "tags": ["Work Orders"],
+        "summary": "List work orders with live shortage calculation",
+        "responses": {
+          "200": { "description": "List of work orders" }
+        }
+      },
+      "post": {
+        "tags": ["Work Orders"],
+        "summary": "Create work order (Admin only)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateWorkOrderRequest" } } }
+        },
+        "responses": {
+          "201": { "description": "Work order created with calculated shortage" },
+          "403": { "description": "Forbidden - requires Admin role" }
+        }
+      }
+    },
+    "/api/work-orders/{id}/status": {
+      "patch": {
+        "tags": ["Work Orders"],
+        "summary": "Update work order status (Admin or Operations)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "status": { "type": "string", "enum": ["ASSIGNED", "IN_PROGRESS", "COMPLETED"] } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Status updated successfully" }
+        }
+      }
+    },
+    "/api/transfers": {
+      "get": {
+        "tags": ["Internal Stock Transfers"],
+        "summary": "List stock transfers (Admin or Operations)",
+        "responses": {
+          "200": { "description": "List of transfers" }
+        }
+      },
+      "post": {
+        "tags": ["Internal Stock Transfers"],
+        "summary": "Create transfer request (Admin or Operations)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateTransferRequest" } } }
+        },
+        "responses": {
+          "201": { "description": "Transfer created in REQUESTED status" },
+          "400": { "description": "Cannot transfer more than available stock" }
+        }
+      }
+    },
+    "/api/transfers/{id}/dispatch": {
+      "post": {
+        "tags": ["Internal Stock Transfers"],
+        "summary": "Dispatch transfer - atomically reduces source stock (Destination stock unchanged)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Transfer dispatched" },
+          "400": { "description": "Invalid status or insufficient stock" }
+        }
+      }
+    },
+    "/api/transfers/{id}/receive": {
+      "post": {
+        "tags": ["Internal Stock Transfers"],
+        "summary": "Receive transfer - atomically increases destination stock (Single receipt idempotency enforced)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Transfer received" },
+          "400": { "description": "Same transfer cannot be received twice" }
+        }
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "tags": ["Customer Orders & Reservations"],
+        "summary": "List customer orders (Admin or Sales)",
+        "responses": {
+          "200": { "description": "List of orders" }
+        }
+      },
+      "post": {
+        "tags": ["Customer Orders & Reservations"],
+        "summary": "Create customer order and atomically reserve stock (Sales or Admin)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateOrderRequest" } } }
+        },
+        "responses": {
+          "201": { "description": "Order created and stock reserved" },
+          "400": { "description": "Cannot reserve more than available inventory" }
+        }
+      }
+    }
+  }
+}
