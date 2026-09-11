@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes';
+import inventoryRoutes from './routes/inventoryRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -15,6 +16,7 @@ app.get('/api/health', (_req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 // Centralized error handler
 app.use(errorHandler);
