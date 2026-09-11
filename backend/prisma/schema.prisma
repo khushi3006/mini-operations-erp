@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  OPERATIONS
+  SALES
+}
+
+enum WorkOrderStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum TransferStatus {
+  REQUESTED
+  DISPATCHED
+  RECEIVED
+}
+
+enum OrderStatus {
+  PENDING
+  RESERVED
+  COMPLETED
+}
+
+model User {
+  id              String          @id @default(uuid())
+  email           String          @unique
+  password        String
+  name            String
+  role            Role            @default(OPERATIONS)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  workOrders      WorkOrder[]     @relation("AssignedWorkOrders")
+  stockTransfers  StockTransfer[] @relation("RequestedTransfers")
+  customerOrders  CustomerOrder[] @relation("CreatedCustomerOrders")
+
+  @@map("users")
+}
+
+model Location {
+  id                   String          @id @default(uuid())
+  code                 String          @unique
+  name                 String
+  address              String?
+  createdAt            DateTime        @default(now()) @map("created_at")
+  updatedAt            DateTime        @updatedAt @map("updated_at")
+
+  inventories          Inventory[]
+  workOrders           WorkOrder[]
+  sourceTransfers      StockTransfer[] @relation("SourceLocationTransfers")
+  destinationTransfers StockTransfer[] @relation("DestinationLocationTransfers")
+  customerOrders       CustomerOrder[]
+
+  @@map("locations")
+}
+
+model Item {
+  id             String          @id @default(uuid())
+  sku            String          @unique
+  name           String
+  category       String
+  unit           String          @default("units")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  inventories    Inventory[]
+  workOrders     WorkOrder[]
+  stockTransfers StockTransfer[]
+  customerOrders CustomerOrder[]
+
+  @@index([category], map: "idx_items_category")
+  @@map("items")
+}
+
+model Inventory {
+  id               String   @id @default(uuid())
+  itemId           String   @map("item_id")
+  locationId       String   @map("location_id")
+  batchNumber      String   @map("batch_number")
+  physicalQuantity Int      @default(0) @map("physical_quantity")
+  reservedQuantity Int      @default(0) @map("reserved_quantity")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  item             Item     @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  location         Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+
+  @@unique([itemId, locationId, batchNumber], name: "itemId_locationId_batchNumber")
+  @@index([locationId, itemId], map: "idx_inventory_lookup")
+  @@index([itemId], map: "idx_inventory_item")
+  @@map("inventories")
+}
+
+model WorkOrder {
+  id               String          @id @default(uuid())
+  workOrderNumber  String          @unique @map("work_order_number")
+  locationId       String          @map("location_id")
+  itemId           String          @map("item_id")
+  requiredQuantity Int             @map("required_quantity")
+  assignedUserId   String          @map("assigned_user_id")
+  status           WorkOrderStatus @default(ASSIGNED)
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  location         Location        @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  item             Item            @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  assignedUser     User            @relation("AssignedWorkOrders", fields: [assignedUserId], references: [id], onDelete: Restrict)
+
+  @@index([locationId, itemId], map: "idx_work_orders_location_item")
+  @@index([status], map: "idx_work_orders_status")
+  @@map("work_orders")
+}
+
+model StockTransfer {
+  id                    String         @id @default(uuid())
+  transferNumber        String         @unique @map("transfer_number")
+  sourceLocationId      String         @map("source_location_id")
+  destinationLocationId String         @map("destination_location_id")
+  itemId                String         @map("item_id")
+  batchNumber           String         @map("batch_number")
+  quantity              Int
+  status                TransferStatus @default(REQUESTED)
+  requestedById         String         @map("requested_by_id")
+  dispatchedAt          DateTime?      @map("dispatched_at")
+  receivedAt            DateTime?      @map("received_at")
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+
+  sourceLocation        Location       @relation("SourceLocationTransfers", fields: [sourceLocationId], references: [id], onDelete: Restrict)
+  destinationLocation   Location       @relation("DestinationLocationTransfers", fields: [destinationLocationId], references: [id], onDelete: Restrict)
+  item                  Item           @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  requestedBy           User           @relation("RequestedTransfers", fields: [requestedById], references: [id], onDelete: Restrict)
+
+  @@index([status], map: "idx_transfers_status")
+  @@index([sourceLocationId], map: "idx_transfers_source")
+  @@index([destinationLocationId], map: "idx_transfers_destination")
+  @@map("stock_transfers")
+}
+
+model CustomerOrder {
+  id           String      @id @default(uuid())
+  orderNumber  String      @unique @map("order_number")
+  customerName String      @map("customer_name")
+  locationId   String      @map("location_id")
+  itemId       String      @map("item_id")
+  batchNumber  String      @map("batch_number")
+  quantity     Int
+  status       OrderStatus @default(RESERVED)
+  createdById  String      @map("created_by_id")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  location     Location    @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  item         Item        @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  createdBy    User        @relation("CreatedCustomerOrders", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([locationId, itemId], map: "idx_customer_orders_item_loc")
+  @@index([status], map: "idx_customer_orders_status")
+  @@map("customer_orders")
+}
