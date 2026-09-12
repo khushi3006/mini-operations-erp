@@ -16,7 +16,7 @@ export const CustomerOrders: React.FC = () => {
   // Form state
   const [customerName, setCustomerName] = useState('');
   const [selectedInventoryId, setSelectedInventoryId] = useState('');
-  const [quantity, setQuantity] = useState<number>(10);
+  const [quantity, setQuantity] = useState<number | string>(10);
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -241,7 +241,7 @@ export const CustomerOrders: React.FC = () => {
               type="number"
               min="1"
               value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+              onChange={(e) => setQuantity(e.target.value === '' ? '' : Number(e.target.value))}
               className="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
               required
             />

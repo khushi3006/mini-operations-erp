@@ -17,7 +17,7 @@ export const WorkOrders: React.FC = () => {
   // Form state
   const [locationId, setLocationId] = useState('');
   const [itemId, setItemId] = useState('');
-  const [requiredQuantity, setRequiredQuantity] = useState<number>(10);
+  const [requiredQuantity, setRequiredQuantity] = useState<number | string>(100);
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -268,7 +268,7 @@ export const WorkOrders: React.FC = () => {
               type="number"
               min="1"
               value={requiredQuantity}
-              onChange={(e) => setRequiredQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+              onChange={(e) => setRequiredQuantity(e.target.value === '' ? '' : Number(e.target.value))}
               className="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-indigo-500"
               required
             />

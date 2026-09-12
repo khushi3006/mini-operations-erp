@@ -18,7 +18,7 @@ export const InternalTransfers: React.FC = () => {
   const [sourceLocationId, setSourceLocationId] = useState('');
   const [destinationLocationId, setDestinationLocationId] = useState('');
   const [selectedInventoryId, setSelectedInventoryId] = useState('');
-  const [quantity, setQuantity] = useState<number>(10);
+  const [quantity, setQuantity] = useState<number | string>(30);
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -33,7 +33,12 @@ export const InternalTransfers: React.FC = () => {
       ]);
       setTransfers(trfRes.data.data);
       setInventoryList(invRes.data.data);
-      setLocations(locRes.data.data);
+      const locs = locRes.data.data;
+      setLocations(locs);
+      if (locs.length >= 2) {
+        setSourceLocationId((prev) => prev || locs[0].id);
+        setDestinationLocationId((prev) => prev || locs[1].id);
+      }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to load transfer data');
     } finally {
@@ -59,7 +64,7 @@ export const InternalTransfers: React.FC = () => {
 
     try {
       await api.post('/transfers', {
-        sourceLocationId: inv.locationId,
+        sourceLocationId,
         destinationLocationId,
         itemId: inv.itemId,
         batchNumber: inv.batchNumber,
@@ -259,8 +264,13 @@ export const InternalTransfers: React.FC = () => {
               <select
                 value={sourceLocationId}
                 onChange={(e) => {
-                  setSourceLocationId(e.target.value);
+                  const newSourceId = e.target.value;
+                  setSourceLocationId(newSourceId);
                   setSelectedInventoryId('');
+                  const otherLoc = locations.find((l) => l.id !== newSourceId);
+                  if (otherLoc) {
+                    setDestinationLocationId(otherLoc.id);
+                  }
                 }}
                 className="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
                 required
@@ -315,7 +325,7 @@ export const InternalTransfers: React.FC = () => {
               type="number"
               min="1"
               value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+              onChange={(e) => setQuantity(e.target.value === '' ? '' : Number(e.target.value))}
               className="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
               required
             />
